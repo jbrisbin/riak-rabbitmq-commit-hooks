@@ -15,6 +15,10 @@ used to. Your bucket properties should look something like this:
 
 ### Installation
 
+I haven't had time to create a binary download yet. In the interest of early 
+adoption, you're free to build and install from source. But if you can wait 
+a day or two, I'll have a binary build up. :)
+
 To install this module, clone the source, build, then symlink the required 
 dependencies into your Riak install:
 
