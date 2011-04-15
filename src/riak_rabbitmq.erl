@@ -18,35 +18,35 @@
 -define(CONTENT_TYPE, <<"content-type">>).
 
 postcommit_send_amqp(RObj) ->
-																								% io:format("robj: ~p~n", [RObj]),
+                                                % io:format("robj: ~p~n", [RObj]),
   Metadata = riak_object:get_metadata(RObj),
-																								% io:format("metadata: ~p~n", [Metadata]),
+                                                % io:format("metadata: ~p~n", [Metadata]),
 
   Exchange = key_find(?EXCHANGE, Metadata, riak_object:bucket(RObj)),
   RoutingKey = key_find(?ROUTING_KEY, Metadata, riak_object:key(RObj)),
   ContentType = list_to_binary(key_find(?CONTENT_TYPE, Metadata, "application/octet-stream")),
   Body = riak_object:get_value(RObj),
 
-																								% Publish a message
+                                                % Publish a message
   Publish = #'basic.publish'{ exchange=Exchange, routing_key=RoutingKey },
   Headers = key_find(?META, Metadata, []),
   AppHdrs = lists:foldl(fun ({HdrKey, HdrValue}, NewHdrs) ->
-														<<_:12/binary, Key/binary>> = list_to_binary(HdrKey),
-														[{binary_to_list(Key), binary, HdrValue} | NewHdrs]
-												end, [], Headers),
-	ExtraHdrs = [case key_find(?DELETED, Metadata, "false") of
-								 "true" -> {"X-Riak-Deleted", binary, "true"};
-								 "false" -> []
-							 end],
+                            <<_:12/binary, Key/binary>> = list_to_binary(HdrKey),
+                            [{binary_to_list(Key), binary, HdrValue} | NewHdrs]
+                        end, [], Headers),
+  ExtraHdrs = [case key_find(?DELETED, Metadata, "false") of
+                 "true" -> {"X-Riak-Deleted", binary, "true"};
+                 "false" -> []
+               end],
   Props = #'P_basic'{ content_type=ContentType, headers=lists:flatten([AppHdrs, ExtraHdrs]) },
 
   Msg = #amqp_msg{ payload=Body, props=Props },
-																								% io:format("message: ~p~n", [Msg]),
+                                                % io:format("message: ~p~n", [Msg]),
   {ok, Channel} = amqp_channel(RObj),
   amqp_channel:cast(Channel, Publish, Msg),
 
-																								%ObjJson = mochijson2:encode(riak_object:to_json(RObj)),
-																								% io:format("sent object: ~p~n", [ObjJson]),
+                                                %ObjJson = mochijson2:encode(riak_object:to_json(RObj)),
+                                                % io:format("sent object: ~p~n", [ObjJson]),
 
   ok.
 
@@ -59,7 +59,7 @@ amqp_channel(RObj) ->
     {error, {no_process, _}} -> 
       case amqp_connection:start(network, AmqpParams) of
         {ok, Client} ->
-																								% io:format("started new client: ~p~n", [Client]),
+                                                % io:format("started new client: ~p~n", [Client]),
           case amqp_connection:open_channel(Client) of
             {ok, Channel} ->
               pg2:join(AmqpParams, Channel),
@@ -69,8 +69,8 @@ amqp_channel(RObj) ->
         {error, Reason} -> {error, Reason}
       end;
     Channel -> 
-																								% io:format("using existing channel: ~p~n", [Channel]),
-			{ok, Channel}
+                                                % io:format("using existing channel: ~p~n", [Channel]),
+      {ok, Channel}
   end.
 
 amqp_p(RObj) ->
@@ -83,17 +83,17 @@ amqp_p(RObj) ->
   Pass = find(?PASSWORD, Metadata, <<"guest">>),
 
   #amqp_params{username = User,
-							 password = Pass,
-							 virtual_host = Vhost,
-							 host = binary_to_list(Host),
-							 port = Port}.
+               password = Pass,
+               virtual_host = Vhost,
+               host = binary_to_list(Host),
+               port = Port}.
 
 find(K, L, Default) ->
-	case lists:keyfind(K, 1, L) of
-		{K, V} -> V;
-		_ -> Default
-	end.
-	
+  case lists:keyfind(K, 1, L) of
+    {K, V} -> V;
+    _ -> Default
+  end.
+  
 key_find(K, D, Default) ->
   case dict:find(K, D) of
     {ok, V} -> V;
