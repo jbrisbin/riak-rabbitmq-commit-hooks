@@ -1,7 +1,7 @@
 {application, riak_rabbitmq,
  [
-  {description, "Riak RabbitMQ post commit hook"},
-  {vsn, "1.0"},
+  {description, "Riak RabbitMQ commit hooks"},
+  {vsn, "0.1.0"},
   {modules, []},
   {registered, []},
   {env, []},

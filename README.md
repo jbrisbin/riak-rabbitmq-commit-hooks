@@ -15,12 +15,21 @@ used to. Your bucket properties should look something like this:
 
 ### Installation
 
-I haven't had time to create a binary download yet. In the interest of early 
-adoption, you're free to build and install from source. But if you can wait 
-a day or two, I'll have a binary build up. :)
+To install from the binary (compiled with Erlang R14B02), download the tar.gz file. 
+cd into the Riak `lib` directory. For example, Homebrew users on a Mac would:
 
-To install this module, clone the source, build, then symlink the required 
-dependencies into your Riak install:
+    cd /usr/local/Cellar/riak/0.14.1/libexec/lib
+    tar -zxvf $HOME/Downloads/riak_rabbitmq-0.1.0-R14B02.tar.gz
+
+This should give you three new directories alongside `riak_kv-0.14.1` and the other 
+libraries:
+
+    amqp_client-2.4.1
+    rabbit_common-2.4.1
+    riak_rabbitmq-0.1.0
+
+You can also clone the source, build, and then symlink the required dependencies 
+into your Riak install:
 
     git clone git://github.com/jbrisbin/riak-rabbitmq-commit-hooks.git
     cd riak-rabbitmq-commit-hooks
@@ -32,8 +41,8 @@ dependencies into your Riak install:
     ln -s $BUILD_DIR/deps/amqp_client amqp_client-2.4.1
     ln -s $BUILD_DIR/deps/rabbit_common rabbit_common-2.4.1
 
-This should expose the module and the right dependencies to your Riak server so 
-that your postcommit hook will actually work.
+Either of these install methods should expose the module and the right dependencies 
+to your Riak server.
 
 ### Configuration
 
