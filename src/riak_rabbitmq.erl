@@ -12,7 +12,7 @@
 -define(ROUTING_KEY, "X-Riak-Meta-Amqp-Routing-Key").
 -define(HOST, "X-Riak-Meta-Amqp-Host").
 -define(PORT, "X-Riak-Meta-Amqp-Port").
--define(VHOST, "X-Riak-Meta-Amqp-VHost").
+-define(VHOST, "X-Riak-Meta-Amqp-Vhost").
 -define(USER, "X-Riak-Meta-Amqp-User").
 -define(PASSWORD, "X-Riak-Meta-Amqp-Password").
 -define(SKIP, "X-Riak-Meta-Amqp-Ignore").

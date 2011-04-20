@@ -50,12 +50,30 @@ To tell the commit hook where to send your entry in the form of an AMQP message,
 you can pass special metadata properties to influence the commit hook's behaviour. 
 The list of acceptable properties is pretty self-explanatory:
 
-* `X-Riak-Meta-AMQP-Exchange`
-* `X-Riak-Meta-AMQP-Routing-Key`
-* `X-Riak-Meta-AMQP-Host`
-* `X-Riak-Meta-AMQP-Port`
-* `X-Riak-Meta-AMQP-VHost`
-* `X-Riak-Meta-AMQP-User`
-* `X-Riak-Meta-AMQP-Password`
+* `X-Riak-Meta-Amqp-Exchange`
+* `X-Riak-Meta-Amqp-Routing-Key`
+* `X-Riak-Meta-Amqp-Host`
+* `X-Riak-Meta-Amqp-Port`
+* `X-Riak-Meta-Amqp-Vhost`
+* `X-Riak-Meta-Amqp-User`
+* `X-Riak-Meta-Amqp-Password`
+
+Alternatively, you can specify settings for an entire bucket by setting these metadata headers 
+on an empty document at the key `AMQP-Meta` in the bucket you want to configure.
+
+This allows you to route entries in an entire bucket to specific RabbitMQ servers without 
+your publisher having to know this information ahead of time.
+
+### Ignore Flag
+
+If you don't want a particular entry in a RabbitMQ-enabled bucket to actually be sent out 
+(like if you're updating the `AMQP-Meta` entry), then set a metadata header with the name 
+`X-Riak-Meta-Amqp-Ignore` to the string "true". The postcommit hook will see this flag and 
+not actually send any message.
+
+### Deleted Entries
+
+If the update operation is a DELETE, the postcommit hook will set an AMQP message header named 
+`X-Riak-Deleted` to "true". This way your application can distinguish between updates and deletes.
 
 This utility is Apache licensed, just like Riak.
