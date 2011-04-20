@@ -19,14 +19,14 @@ To install from the binary (compiled with Erlang R14B02), download the tar.gz fi
 cd into the Riak `lib` directory. For example, Homebrew users on a Mac would:
 
     cd /usr/local/Cellar/riak/0.14.1/libexec/lib
-    tar -zxvf $HOME/Downloads/riak_rabbitmq-0.1.0-R14B02.tar.gz
+    tar -zxvf $HOME/Downloads/riak_rabbitmq-0.1.3-R14B02.tar.gz
 
 This should give you three new directories alongside `riak_kv-0.14.1` and the other 
 libraries:
 
     amqp_client-2.4.1
     rabbit_common-2.4.1
-    riak_rabbitmq-0.1.0
+    riak_rabbitmq-0.1.3
 
 You can also clone the source, build, and then symlink the required dependencies 
 into your Riak install:
@@ -37,7 +37,7 @@ into your Riak install:
     make
     [...wait for a long time while spidermonkey builds...]
     cd $RIAK_LIBS
-    ln -s $BUILD_DIR riak_rabbitmq-0.1.0
+    ln -s $BUILD_DIR riak_rabbitmq-0.1.3
     ln -s $BUILD_DIR/deps/amqp_client amqp_client-2.4.1
     ln -s $BUILD_DIR/deps/rabbit_common rabbit_common-2.4.1
 
