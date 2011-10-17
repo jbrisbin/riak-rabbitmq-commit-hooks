@@ -25,7 +25,7 @@ postcommit_send_amqp(RObj) ->
     {ok, PBMO} -> PBMO;
     _ -> none
   end,
-  % io:format("bucket meta obj: ~p~n", [PerBucketMetaObj]),
+  % lager:log(info, "bucket meta obj: ~p", [PerBucketMetaObj]),
   PerBucketMeta = case PerBucketMetaObj of
     none -> none;
     _ -> 
@@ -61,7 +61,9 @@ postcommit_send_amqp(RObj) ->
       Msg = #amqp_msg{ payload=Body, props=Props },
       % io:format("message: ~p~n", [Msg]),
       {ok, Channel} = amqp_channel(RObj, PerBucketMetaObj),
+      % io:format("channel: ~p~n", [Channel]),
       amqp_channel:cast(Channel, Publish, Msg),
+      % io:format("published~n"),
       ok
   end.
 
@@ -73,7 +75,8 @@ amqp_channel(RObj, PerBucketMetaObj) ->
       pg2:create(AmqpParams),
       amqp_channel(RObj, PerBucketMetaObj);
     {error, {no_process, _}} -> 
-      case amqp_connection:start(network, AmqpParams) of
+      % io:format("no client running~n"),
+      case amqp_connection:start(AmqpParams) of
         {ok, Client} ->
           % io:format("started new client: ~p~n", [Client]),
           case amqp_connection:open_channel(Client) of
@@ -82,7 +85,9 @@ amqp_channel(RObj, PerBucketMetaObj) ->
               {ok, Channel};
             {error, Reason} -> {error, Reason}
           end;
-        {error, Reason} -> {error, Reason}
+        {error, Reason} -> 
+          % io:format("encountered an error: ~p~n", [Reason]),
+          {error, Reason}
       end;
     Channel -> 
       % io:format("using existing channel: ~p~n", [Channel]),
@@ -102,11 +107,11 @@ amqp_p(RObj, PerBucketMetaObj) ->
   User = find(?USER, Metadata, PerBucketMetadata, <<"guest">>),
   Pass = find(?PASSWORD, Metadata, PerBucketMetadata, <<"guest">>),
 
-  #amqp_params{username = User,
-               password = Pass,
-               virtual_host = Vhost,
-               host = binary_to_list(Host),
-               port = Port}.
+  #amqp_params_network{username = User,
+                       password = Pass,
+                       virtual_host = Vhost,
+                       host = binary_to_list(Host),
+                       port = Port}.
 
 find(K, L, PerBucketMetadata, Default) ->
   case lists:keyfind(K, 1, L) of
